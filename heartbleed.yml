@@ -1,0 +1,35 @@
+---
+
+- hosts: all
+  sudo: yes
+  
+  tasks:
+    - name: OpenSSL | Get current version
+      shell: 'dpkg-query -W openssl'
+      register: openssl_version
+
+    - name: OpenSSL | Get current version
+      shell: 'dpkg-query -W libssl1.0.0'
+      register: libssl_version
+
+    - name: OpenSSL | Confirm new version
+      debug: msg="OpenSSL version installed is {{openssl_version.stdout}}, libssl version installed is {{libssl_version.stdout}}"
+
+
+    - name: OpenSSL | Apt | Upgrade Openssl
+      apt: name={{ item }} state=present update_cache=yes
+      with_items:
+        - openssl
+        - libssl1.0.0
+
+    - name: OpenSSL | Get new version
+      shell: 'dpkg-query -W openssl'
+      register: openssl_version
+
+    - name: OpenSSL | Get new version
+      shell: 'dpkg-query -W libssl1.0.0'
+      register: libssl_version
+
+    - name: OpenSSL | Confirm new version
+      debug: msg="OpenSSL version installed is {{openssl_version.stdout}}, libssl version installed is {{libssl_version.stdout}}"
+
